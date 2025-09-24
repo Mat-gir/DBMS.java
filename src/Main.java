@@ -25,7 +25,7 @@ public class Main {
 
         if(r != null && r1 != null && r2 != null){
             System.out.println("PROVA SELECTION");
-            System.out.println(r.selection("MateriaP = Italiano"));
+            System.out.println(r.selection("MateriaP = 'Italiano'"));
 
             System.out.println("PROVA PROJECTION");
             System.out.println(r.projection(new String[]{"Nome", "Cognome"}));

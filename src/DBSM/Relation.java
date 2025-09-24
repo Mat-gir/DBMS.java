@@ -260,7 +260,7 @@ public class Relation {
         return res;
     }
 
-    public Relation join(Relation r, String cond){
+    public Relation join(Relation r, String condition){
         // Associa ad ogni riga di this le righe di r per cui è soddisfatta la condizionenella forma
         // campo1 = campo2 con campo1 in this e campo2 in r
 
@@ -268,21 +268,67 @@ public class Relation {
         System.arraycopy(fields_name, 0, fn, 0, fields_name.length);
         System.arraycopy(r.fields_name, 0, fn, fields_name.length, r.fields_name.length);
 
-        Relation res = new Relation("R", fn);
-
-        String[] condition = cond.split(" ");
-
-        int fi1 = getFieldIndex(condition[0]);
-        int fi2 = r.getFieldIndex(condition[2]);
-
+        // Creo nuova relazione
+        Relation res = new Relation("R1", fn);
+        // Creo un supporto per la nuova riga
         String[] new_row = new String[fn.length];
+
+        String[] cond = condition.split(" ");
+        int fi1 = getFieldIndex(cond[0]);
+        int fi2 = r.getFieldIndex(cond[2]);
+
         for(String[] rt : data){
             System.arraycopy(rt, 0, new_row, 0 , rt.length);
             for(String[] rr : r.data){
-                if(rt[fi1].equals(rr[fi2])){
+                if (cond[1].equals("=") && rt[fi1].equals(rr[fi2])){
+                    System.arraycopy(rr, 0, new_row, rt.length, rr.length);
+                    res.insert(new_row);
+                }else if (cond[1].equals("<>") && !rt[fi1].equals(rr[fi2])){
                     System.arraycopy(rr, 0, new_row, rt.length, rr.length);
                     res.insert(new_row);
                 }
+            }
+        }
+
+        return res;
+    }
+
+
+    public Relation join(Relation r){
+        // ritorna tutte le righe di this con associate tutte le righe di r che hanno
+        // i campi con lo stesso nome uguale. i campi con i nomi uguali compaiono una volta sola
+
+        // ricerco gli indici dei campi duplicati
+        ArrayList<Integer> fie = new ArrayList<Integer>();
+        // dove si trovano i campi duplicati? in r
+        int fi;
+        for(String fn : fields_name){
+            fi= r.getFieldIndex(fn);
+            if (fi != -1){
+                fie.add(fi);
+            }
+        }
+
+        String[] nfns = new String[fields_name.length + r.fields_name.length - fie.size()];
+        System.arraycopy(fields_name, 0, nfns, 0, fields_name.length);
+        int index = fields_name.length;
+        for (String fn : r.fields_name){
+            if (!fie.contains(r.getFieldIndex(fn))){
+                nfns[index] = fn;
+                index++;
+            }
+        }
+
+        // Creo nuova relazione
+        Relation res = new Relation("R", nfns);
+
+        String[] new_row = new String[nfns.length];
+        for (String[] rt : data){
+            System.arraycopy(rt, 0, new_row, 0, rt.length);
+            for(String[] rr : r.data){
+                // verifico se devo copiare
+                // in caso affermativo copio oslo le colonne corrette
+                //
             }
         }
 
