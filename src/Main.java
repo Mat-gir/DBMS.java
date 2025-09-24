@@ -42,6 +42,15 @@ public class Main {
             System.out.println("PROVA DIFFERENCE");
             System.out.println(ru.difference(r));
 
+
+            System.out.println("PROVA AGGIORNAMENTO SELECTION");
+            Relation c = r.crossProduct(r1);
+            System.out.println(c.selection("Cognome = ClasseId"));
+
+            System.out.println("PROVA JOIN");
+            System.out.println(r.join(r1, "Classe = ClasseId"));
+
+
         }
 
 

@@ -34,7 +34,7 @@ public class Relation {
         for(String[] row : data){
             equals = true;
             for(int i = 0; i < row.length; i++){
-                if(!row[i].equals(new_row)) {
+                if(!row[i].equals(new_row[i])) {
                     equals = false;
                     i = row.length;
                 }
@@ -126,21 +126,38 @@ public class Relation {
         return -1;
     }
 
+    private String getValue(String raw_data, String[] row){
+        // se la stringa passata in parametro inizia con ' ritorno il valore compreso fra i due apici
+        // altrimenti il valore della colonna corrispondente riga passata in parametro
+
+        if(raw_data.startsWith("'")){
+            return raw_data.substring(1, raw_data.length()-1);
+        } else {
+            return row[getFieldIndex(raw_data)];
+        }
+    }
+
+
     public Relation selection(String condition){
+        // devo definire le condizioni stringa "campo = valore" o "campo = campo"
+
         Relation res = new Relation("R1", fields_name);
 
         //0 è campo, 1 è operatore, 2 è valore
         String[] cond = condition.split(" ");
         int fi = getFieldIndex(cond[0]);
+        String value; // il valore su cui faccio il confronto del campo
 
         if (fi != -1){
             for(String[] row : data){
+                value = getValue(cond[2], row);
+
                 if (cond[1].equals("=")){
-                    if (cond[2].equals(row[fi])){
+                    if (value.equals(row[fi])){
                         res.insert(row);
                     }
                 } else if (cond[1].equals("<>")) {
-                    if (cond[2].equals(row[fi])){
+                    if (!value.equals(row[fi])){
                         res.insert(row);
                     }
                 }
@@ -237,6 +254,35 @@ public class Relation {
         for(String[] row : data){
             if (!r.isDuplicated(row)){
                 res.insert(row);
+            }
+        }
+
+        return res;
+    }
+
+    public Relation join(Relation r, String cond){
+        // Associa ad ogni riga di this le righe di r per cui è soddisfatta la condizionenella forma
+        // campo1 = campo2 con campo1 in this e campo2 in r
+
+        String[] fn = new String[fields_name.length + r.fields_name.length];
+        System.arraycopy(fields_name, 0, fn, 0, fields_name.length);
+        System.arraycopy(r.fields_name, 0, fn, fields_name.length, r.fields_name.length);
+
+        Relation res = new Relation("R", fn);
+
+        String[] condition = cond.split(" ");
+
+        int fi1 = getFieldIndex(condition[0]);
+        int fi2 = r.getFieldIndex(condition[2]);
+
+        String[] new_row = new String[fn.length];
+        for(String[] rt : data){
+            System.arraycopy(rt, 0, new_row, 0 , rt.length);
+            for(String[] rr : r.data){
+                if(rt[fi1].equals(rr[fi2])){
+                    System.arraycopy(rr, 0, new_row, rt.length, rr.length);
+                    res.insert(new_row);
+                }
             }
         }
 
