@@ -316,8 +316,6 @@ public class Relation {
             }
         }
 
-
-
         return res;
     }
 

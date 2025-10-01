@@ -45,8 +45,6 @@ public class Main {
              *
              */
 
-
-
             System.out.println("PROVA AGGIORNAMENTO SELECTION");
             Relation c = r.crossProduct(r1);
             System.out.println(c.selection("Cognome = ClasseId"));
