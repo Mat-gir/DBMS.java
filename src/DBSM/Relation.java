@@ -260,6 +260,17 @@ public class Relation {
         return res;
     }
 
+    private boolean evalCond (String condition, String[] rthis, String[] rrel, Relation r){
+        String[] cond = condition.split(" ");
+        if (cond[1].equals("=")){
+            return rthis[getFieldIndex(cond[0])].equals(rrel[r.getFieldIndex(cond[2])]);
+        } else if (cond[1].equals("<>")){
+            return !rthis[getFieldIndex(cond[0])].equals(rrel[r.getFieldIndex(cond[2])]);
+        } else {
+            return false;
+        }
+    }
+
     public Relation join(Relation r, String condition){
         // Associa ad ogni riga di this le righe di r per cui è soddisfatta la condizionenella forma
         // campo1 = campo2 con campo1 in this e campo2 in r
@@ -273,22 +284,39 @@ public class Relation {
         // Creo un supporto per la nuova riga
         String[] new_row = new String[fn.length];
 
-        String[] cond = condition.split(" ");
-        int fi1 = getFieldIndex(cond[0]);
-        int fi2 = r.getFieldIndex(cond[2]);
 
-        for(String[] rt : data){
-            System.arraycopy(rt, 0, new_row, 0 , rt.length);
-            for(String[] rr : r.data){
-                if (cond[1].equals("=") && rt[fi1].equals(rr[fi2])){
-                    System.arraycopy(rr, 0, new_row, rt.length, rr.length);
-                    res.insert(new_row);
-                }else if (cond[1].equals("<>") && !rt[fi1].equals(rr[fi2])){
-                    System.arraycopy(rr, 0, new_row, rt.length, rr.length);
-                    res.insert(new_row);
+        // non c'è and quindi ho una sola condizione
+        String[] cond = condition.split(" AND ");
+        if(cond.length == 1){
+            cond = condition.split(" ");
+            int fi1 = getFieldIndex(cond[0]);
+            int fi2 = r.getFieldIndex(cond[2]);
+
+            for(String[] rt : data){
+                System.arraycopy(rt, 0, new_row, 0 , rt.length);
+                for(String[] rr : r.data){
+                    if (cond[1].equals("=") && rt[fi1].equals(rr[fi2])){
+                        System.arraycopy(rr, 0, new_row, rt.length, rr.length);
+                        res.insert(new_row);
+                    }else if (cond[1].equals("<>") && !rt[fi1].equals(rr[fi2])){
+                        System.arraycopy(rr, 0, new_row, rt.length, rr.length);
+                        res.insert(new_row);
+                    }
+                }
+            }
+        } else {
+            for(String[] rt : data){
+                System.arraycopy(rt, 0, new_row, 0 , rt.length);
+                for(String[] rr : r.data){
+                    if (evalCond(cond[0], rt, rr, r) && evalCond(cond[1], rt, rr, r)){
+                        System.arraycopy(rr, 0, new_row, rt.length, rr.length);
+                        res.insert(new_row);
+                    }
                 }
             }
         }
+
+
 
         return res;
     }

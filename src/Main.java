@@ -34,13 +34,17 @@ public class Main {
             //System.out.println(r1.rename("Cicci", new String[]{"Paolino", "Paperino"}));
             System.out.println(r.crossProduct(r1));
 
-            System.out.println("PROVA UNION"); // ERRORE! UNION NON FUNZIONA
-            Relation ru = r.union(r2);
+            /* // ERRORE! UNION NON FUNZIONA, perche r e r2 non hanno gli stessi campi,
+             *    la join va fatta solo su relazioni con campi uguali
+             * System.out.println("PROVA UNION");
+             * Relation ru = r.union(r2);
+             * System.out.println(ru);
+             *
+             * System.out.println("PROVA DIFFERENCE");
+             * System.out.println(ru.difference(r));
+             *
+             */
 
-            System.out.println(ru);
-
-            System.out.println("PROVA DIFFERENCE");
-            System.out.println(ru.difference(r));
 
 
             System.out.println("PROVA AGGIORNAMENTO SELECTION");
